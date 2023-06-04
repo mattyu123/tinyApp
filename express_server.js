@@ -9,6 +9,13 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+//add a route to handle the urls that come into our template
+app.get('/urls', (req, res) => {
+  const templateVars = urlDatabase;
+  res.render('urls_index.ejs', templateVars)
+});
+
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
