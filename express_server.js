@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 
+//middleware to use ejs 
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -11,10 +12,13 @@ const urlDatabase = {
 
 //add a route to handle the urls that come into our template
 app.get('/urls', (req, res) => {
-  const templateVars = urlDatabase;
-  res.render('urls_index.ejs', templateVars)
-});
+  const templateVars = {
+    urls: urlDatabase
+  };
 
+  // res.render('urls_index', templateVars)
+  res.render('urls_index', templateVars) //testing that the connection can be established
+});
 
 app.get("/", (req, res) => {
   res.send("Hello!");
