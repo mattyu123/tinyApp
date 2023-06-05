@@ -23,12 +23,7 @@ app.get('/urls', (req, res) => {
 
 //new route to render template with access to specific url id
 app.get("/urls/:id", (req, res) => {
-
-  // const urlDatabase = {urlDatabase}
-
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
-  console.log(templateVars);
-
   res.render("urls_show", templateVars);
 });
 
