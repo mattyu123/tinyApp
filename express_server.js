@@ -64,11 +64,11 @@ app.get("/urls/:id", (req, res) => {
 //takes the short form URL and redirects it to the long form URL
 app.get("/u/:id", (req, res) => {
   const id = req.params.id
-  
-  const longURL = `/urls/${urlDatabase.id}`
 
+  const longURL = urlDatabase[id]
   res.redirect(longURL);
 });
+
 
 
 app.get("/", (req, res) => {
