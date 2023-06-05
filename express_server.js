@@ -42,15 +42,34 @@ app.get("/urls/new", (req, res) => {
 
 //sends a post request to the server
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  res.send(`Status: ${res.statusCode} Ok`); 
+  // console.log(req.body); // Log the POST request body to the console
+  
+  const id = generateRandomString()
+  const longURL = req.body.longURL
+
+  urlDatabase[id] = longURL //updates the urlDatabase with the random shortened URL and the submitted form URL
+
+  res.redirect(`/urls/${id}`) //redirect to the new URL with the id in the path
 });
 
 //new route to render template with access to specific url id
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
+  const id = req.params.id
+  const longURL = urlDatabase[req.params.id]
+
+  const templateVars = { id, longURL };
   res.render("urls_show", templateVars);
 });
+
+//takes the short form URL and redirects it to the long form URL
+app.get("/u/:id", (req, res) => {
+  const id = req.params.id
+  
+  const longURL = `/urls/${urlDatabase.id}`
+
+  res.redirect(longURL);
+});
+
 
 app.get("/", (req, res) => {
   res.send("Hello! You have reached the home page");
