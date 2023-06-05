@@ -15,10 +15,15 @@ app.get('/urls', (req, res) => {
   const templateVars = {
     urls: urlDatabase
   };
-
-  // res.render('urls_index', templateVars)
   res.render('urls_index', templateVars) //testing that the connection can be established
 });
+
+//new route to render template with access to specific url id
+app.get("/urls/:id", (req, res) => {
+  const templateVars = { id: req.params.id, longURL: req.params.longURL };
+  res.render("urls_show", templateVars);
+});
+
 
 app.get("/", (req, res) => {
   res.send("Hello!");
