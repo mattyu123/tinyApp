@@ -68,6 +68,15 @@ app.get("/u/:id", (req, res) => {
   res.redirect(longURL);
 });
 
+//post route that removes a url resources and redirects user back to url home page
+app.post("/urls/:id/delete", (req, res) => {
+  const id = req.params.id;
+  delete urlDatabase[id]
+
+  res.redirect("/urls");
+})
+
+
 app.get("/", (req, res) => {
   res.send("Hello! You have reached the home page");
 });
