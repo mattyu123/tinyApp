@@ -3,7 +3,9 @@ const morgan = require("morgan");
 const app = express();
 const PORT = 8080; // default port 8080
 
+//setting up all the middleware that we need
 app.use(morgan('dev'));
+app.use(express.urlencoded({ extended: true }));
 
 //middleware to use ejs
 app.set("view engine", "ejs");
@@ -19,6 +21,11 @@ app.get('/urls', (req, res) => {
     urls: urlDatabase
   };
   res.render('urls_index', templateVars); //testing that the connection can be established
+});
+
+//Create a get route to render the urls_new.ejs
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
 });
 
 //new route to render template with access to specific url id
