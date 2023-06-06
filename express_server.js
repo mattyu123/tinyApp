@@ -1,14 +1,13 @@
 const express = require("express");
 const morgan = require("morgan");
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080; // default port 8080
 
 //setting up all the middleware that we need
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser())
-//middleware to use ejs
+app.use(cookieParser());
 app.set("view engine", "ejs");
 
 //function to generate a random unique 6 character string
@@ -17,7 +16,7 @@ const generateRandomString = function() {
   let result = '';
   const charactersLength = characters.length;
 
-  for(let i = 0; i < 6; i++ ) {
+  for (let i = 0; i < 6; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
@@ -29,8 +28,8 @@ const urlDatabase = {
 };
 
 //add a route to handle the urls that come into our template
-//Request also takes the cookies that were generated 
-app.get('/urls', (req, res) => {  
+//Request also takes the cookies that were generated
+app.get('/urls', (req, res) => {
   const templateVars = {
     urls: urlDatabase,
     username: req.cookies["username"],
@@ -42,7 +41,7 @@ app.get('/urls', (req, res) => {
 app.get("/urls/new", (req, res) => {
   const templateVars = {
     username: req.cookies["username"]
-  }
+  };
   res.render("urls_new", templateVars);
 });
 
@@ -91,16 +90,15 @@ app.post("/urls/edit/:id", (req, res) => {
 
 //post route that handles the login request to create a cookie and store it
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username)
-  res.redirect("/urls")
-})
+  res.cookie("username", req.body.username);
+  res.redirect("/urls");
+});
 
 //post route that will
 app.post("/logout", (req, res) => {
-  res.clearCookie("username")
-  res.redirect("/urls")
-})
-
+  res.clearCookie("username");
+  res.redirect("/urls");
+});
 
 app.get("/", (req, res) => {
   res.send("Hello! You have reached the home page");
