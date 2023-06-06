@@ -1,12 +1,13 @@
 const express = require("express");
 const morgan = require("morgan");
+const cookieParser = require('cookie-parser')
 const app = express();
 const PORT = 8080; // default port 8080
 
 //setting up all the middleware that we need
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
-
+app.use(cookieParser())
 //middleware to use ejs
 app.set("view engine", "ejs");
 
@@ -28,12 +29,16 @@ const urlDatabase = {
 };
 
 //add a route to handle the urls that come into our template
-app.get('/urls', (req, res) => {
+//Request also takes the cookies that were generated 
+app.get('/urls', (req, res) => {  
   const templateVars = {
-    urls: urlDatabase
+    urls: urlDatabase,
+    username: req.cookies["username"],
   };
   res.render('urls_index', templateVars); //testing that the connection can be established
 });
+
+
 
 //Create a get route to render the urls_new.ejs
 app.get("/urls/new", (req, res) => {
@@ -88,6 +93,15 @@ app.post("/login", (req, res) => {
   res.cookie("username", req.body.username)
   res.redirect("/urls")
 })
+
+//get route that will display the username in the header for the index
+// app.get("/urls", (req, res) => {
+//   const templateVars = {
+//     username: req.cookies["username"],
+//   };
+//   console.log(templateVars)
+//   res.render("urls_index", templateVars);
+// });
 
 app.get("/", (req, res) => {
   res.send("Hello! You have reached the home page");
