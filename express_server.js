@@ -37,6 +37,12 @@ app.get('/urls', (req, res) => {
   res.render('urls_index', templateVars); //testing that the connection can be established
 });
 
+//create a route for the registration page when the user wants to login
+app.get('/register', (req, res) => {
+  res.render('registration')
+})
+
+
 //Create a get route to render the urls_new.ejs
 app.get("/urls/new", (req, res) => {
   const templateVars = {
