@@ -38,11 +38,12 @@ app.get('/urls', (req, res) => {
   res.render('urls_index', templateVars); //testing that the connection can be established
 });
 
-
-
 //Create a get route to render the urls_new.ejs
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = {
+    username: req.cookies["username"]
+  }
+  res.render("urls_new", templateVars);
 });
 
 //sends a post request to the server
@@ -61,7 +62,7 @@ app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[req.params.id];
 
-  const templateVars = { id, longURL };
+  const templateVars = { id, longURL, username: req.cookies["username"], };
   res.render("urls_show", templateVars);
 });
 
@@ -93,15 +94,6 @@ app.post("/login", (req, res) => {
   res.cookie("username", req.body.username)
   res.redirect("/urls")
 })
-
-//get route that will display the username in the header for the index
-// app.get("/urls", (req, res) => {
-//   const templateVars = {
-//     username: req.cookies["username"],
-//   };
-//   console.log(templateVars)
-//   res.render("urls_index", templateVars);
-// });
 
 app.get("/", (req, res) => {
   res.send("Hello! You have reached the home page");

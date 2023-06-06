@@ -16,10 +16,9 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-        <form method="POST" action = "/login">
-          Username: <input type="text" name="username">
-          <h3>Loggedin As <%= username %></h3>
+        <form method="POST" action = "/login" style="float:right;">
           <button type="submit">Login</button>
+          Username: <input type="text" name="username">Loggedin As <%= username %>
         </form>
       </div>
     </div>
