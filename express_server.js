@@ -83,6 +83,12 @@ app.post("/urls/edit/:id", (req, res) => {
   res.redirect("/urls");
 });
 
+//post route that handles the login request to create a cookie and store it
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username)
+  res.redirect("/urls")
+})
+
 app.get("/", (req, res) => {
   res.send("Hello! You have reached the home page");
 });
