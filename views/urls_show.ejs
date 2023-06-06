@@ -17,10 +17,16 @@
     <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
+        
         <h5 class="card-title">TinyURL for: <%= longURL %></h5>
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
+        <form method="POST" action="/urls/edit/<%= id %>">
+          
+          New URL:<input type = "text" name = "updatedURL"></input>
+          <button type = "submit" class = "btn btn-primary">Submit</button>
+        </form>
       </div>
       <div class="card-footer text-muted"></div>
     </div>

@@ -56,6 +56,8 @@ app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[req.params.id];
 
+  console.log(longURL)
+
   const templateVars = { id, longURL };
   res.render("urls_show", templateVars);
 });
@@ -72,6 +74,17 @@ app.get("/u/:id", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
   delete urlDatabase[id]
+
+  res.redirect("/urls");
+})
+
+//post route that updates a URL reasource 
+app.post("/urls/edit/:id", (req, res) => {
+  const id = req.params.id;
+
+  console.log(req.body)
+
+  urlDatabase[id] = req.body["updatedURL"]
 
   res.redirect("/urls");
 })
