@@ -16,11 +16,11 @@ const generateRandomString = function() {
   let result = '';
   const charactersLength = characters.length;
 
-  for ( let i = 0; i < 6; i++ ){
+  for(let i = 0; i < 6; i++ ) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
-}
+};
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -56,8 +56,6 @@ app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[req.params.id];
 
-  console.log(longURL)
-
   const templateVars = { id, longURL };
   res.render("urls_show", templateVars);
 });
@@ -71,24 +69,19 @@ app.get("/u/:id", (req, res) => {
 });
 
 //post route that removes a url resources and redirects user back to url home page
-app.post("/urls/:id/delete", (req, res) => {
+app.post("/urls/delete/:id", (req, res) => {
   const id = req.params.id;
-  delete urlDatabase[id]
+  delete urlDatabase[id];
 
   res.redirect("/urls");
-})
+});
 
-//post route that updates a URL reasource 
+//post route that updates a URL reasource and redirects back to the /urls page
 app.post("/urls/edit/:id", (req, res) => {
   const id = req.params.id;
-
-  console.log(req.body)
-
-  urlDatabase[id] = req.body["updatedURL"]
-
+  urlDatabase[id] = req.body["updatedURL"];
   res.redirect("/urls");
-})
-
+});
 
 app.get("/", (req, res) => {
   res.send("Hello! You have reached the home page");
@@ -97,11 +90,6 @@ app.get("/", (req, res) => {
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
-
-//old code at the beginning, commenting out for now
-// app.get("/hello", (req, res) => {
-//   res.send("<html><body>Hello <b>World</b></body></html>\n");
-// });
 
 //listens for a connection to the server and returns to the user that the connection has been established
 app.listen(PORT, () => {

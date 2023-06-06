@@ -37,12 +37,10 @@
                 <td><%= id %></td>
                 <td><%= urls[id] %></td>
                 <td>
-                  <form method = "POST" action = "/urls/edit/<%= id %>">
-                  </form>
-                  <input type = "button" onclick = "location.href = '/urls/<%= id %>' " value = "Edit">                    
+                  <input type = "button" onclick = "location.href = '/urls/<%= id %>' " value = "Edit">
                 </td>
                 <td>
-                  <form method="POST" action="/urls/<%= id %>/delete">
+                  <form method="POST" action="/urls/delete/<%= id %>">
                     <button type="submit" class = "btn btn-primary">Delete</button>
                   </form>
                 </td>
