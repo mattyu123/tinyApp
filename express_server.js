@@ -65,12 +65,6 @@ app.post('/register', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   
-  users[newUserID] = {
-    id: newUserID,
-    email,
-    password
-  }
-
   //create a cookie with the user's newly generated ID
   res.cookie("user_id", newUserID);
 
@@ -78,11 +72,19 @@ app.post('/register', (req, res) => {
   if (!email || !password) {
     return res.status(400).send("You must enter a username or password")
   }
-
+  
+  //if the email already exists, then you cannot continue
   for (item in users) {
     if (email === users[item].email) {
       return res.status(400).send("An email like this already exists")
     }
+  }
+  
+  //adds the newly generated userID to the users object
+  users[newUserID] = {
+    id: newUserID,
+    email,
+    password
   }
 
   res.redirect("/urls")
@@ -139,6 +141,11 @@ app.post("/urls/edit/:id", (req, res) => {
   urlDatabase[id] = req.body["updatedURL"];
   res.redirect("/urls");
 });
+
+//route that gets the login page when a user enters it 
+app.get("/login", (req, res) => {
+  res.render("login")
+})
 
 //post route that handles the login request to create a cookie and store it
 app.post("/login", (req, res) => {
