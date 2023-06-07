@@ -74,6 +74,17 @@ app.post('/register', (req, res) => {
   //create a cookie with the user's newly generated ID
   res.cookie("user_id", newUserID);
 
+  //if there is no email or password, then sends 400 error code with error message
+  if (!email || !password) {
+    return res.status(400).send("You must enter a username or password")
+  }
+
+  for (item in users) {
+    if (email === users[item].email) {
+      return res.status(400).send("An email like this already exists")
+    }
+  }
+
   res.redirect("/urls")
 })
 
@@ -138,7 +149,7 @@ app.post("/login", (req, res) => {
 //post route that will
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
-  res.clearCookie("user_id");
+  // res.clearCookie("user_id"); -- clears the cookie so after we logout it gets rid of cookie
   res.redirect("/urls");
 });
 
