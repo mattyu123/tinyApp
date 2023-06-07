@@ -46,9 +46,12 @@ const users = {
 //Request also takes the cookies that were generated
 app.get('/urls', (req, res) => {
 
+  const loggedInUser = users[req.cookies.user_id]
+
     const templateVars = {
     urls: urlDatabase,
-    username: users[req.cookies.user_id],
+    user: loggedInUser
+    // username: users[req.cookies.user_id],
   };
 
   res.render('urls_index', templateVars); //testing that the connection can be established
@@ -65,9 +68,7 @@ app.post('/register', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   
-  //create a cookie with the user's newly generated ID
-  res.cookie("user_id", newUserID);
-
+  
   //if there is no email or password, then sends 400 error code with error message
   if (!email || !password) {
     return res.status(400).send("You must enter a username or password")
@@ -86,6 +87,9 @@ app.post('/register', (req, res) => {
     email,
     password
   }
+  
+  //create a cookie with the user's newly generated ID
+  res.cookie("user_id", newUserID);
 
   res.redirect("/urls")
 })
@@ -142,7 +146,7 @@ app.post("/urls/edit/:id", (req, res) => {
   res.redirect("/urls");
 });
 
-//route that gets the login page when a user enters it 
+//route that renders the login page
 app.get("/login", (req, res) => {
   res.render("login")
 })
@@ -155,7 +159,7 @@ app.post("/login", (req, res) => {
 
 //post route that will
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   // res.clearCookie("user_id"); -- clears the cookie so after we logout it gets rid of cookie
   res.redirect("/urls");
 });
