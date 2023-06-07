@@ -22,9 +22,24 @@ const generateRandomString = function() {
   return result;
 };
 
+//Object that stores our URLs with shortened version as key and full URL as value
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+};
+
+//users object contains the id, login and password for anyone who enters our app
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "a@a.com",
+    password: "1234",
+  },
+  userRandomID2: {
+    id: "user2RandomID",
+    email: "b@b.com",
+    password: "abcd",
+  },
 };
 
 //add a route to handle the urls that come into our template
@@ -42,6 +57,24 @@ app.get('/register', (req, res) => {
   res.render('registration')
 })
 
+//route that handles the registration form data and adds the new login to users object
+app.post('/register', (req, res) => {
+  const newUserID = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+  
+  users[newUserID] = {
+    id: newUserID,
+    email: email,
+    password: password
+  }
+
+  //create a cookie with the user's newly generated ID
+  res.cookie("user_id", newUserID);
+
+  res.redirect("/urls")
+
+})
 
 //Create a get route to render the urls_new.ejs
 app.get("/urls/new", (req, res) => {
