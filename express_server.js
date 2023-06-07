@@ -45,10 +45,12 @@ const users = {
 //add a route to handle the urls that come into our template
 //Request also takes the cookies that were generated
 app.get('/urls', (req, res) => {
-  const templateVars = {
+
+    const templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"],
+    username: users[req.cookies.user_id],
   };
+
   res.render('urls_index', templateVars); //testing that the connection can be established
 });
 
@@ -65,22 +67,22 @@ app.post('/register', (req, res) => {
   
   users[newUserID] = {
     id: newUserID,
-    email: email,
-    password: password
+    email,
+    password
   }
 
   //create a cookie with the user's newly generated ID
   res.cookie("user_id", newUserID);
 
   res.redirect("/urls")
-
 })
 
 //Create a get route to render the urls_new.ejs
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"]
+    username: users[req.cookies.user_id]
   };
+
   res.render("urls_new", templateVars);
 });
 
@@ -100,7 +102,7 @@ app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[req.params.id];
 
-  const templateVars = { id, longURL, username: req.cookies["username"], };
+  const templateVars = { id, longURL, username: users[req.cookies.user_id], };
   res.render("urls_show", templateVars);
 });
 
@@ -136,6 +138,7 @@ app.post("/login", (req, res) => {
 //post route that will
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
