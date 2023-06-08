@@ -56,6 +56,7 @@ const users = {
 //add a route to handle the urls that come into our template
 //Request also takes the cookies that were generated
 app.get('/urls', (req, res) => {
+  const id = req.params.id;
   const loggedInUser = users[req.cookies.user_id];
   const templateVars = {
     urls: urlDatabase,
@@ -138,14 +139,22 @@ app.post("/urls", (req, res) => {
   const id = generateRandomString();
   const longURL = req.body.longURL;
 
-  urlDatabase[id] = longURL; //updates the urlDatabase with the random shortened URL and the submitted form URL
+  //updated urlDatabase that will add the longURL, and the userID of the person adding the URL
+  urlDatabase[id] = {
+    longURL: longURL,
+    userID: req.cookies.user_id
+  }
+
+  // console.log(urlDatabase)
+
+  // urlDatabase[id] = longURL; //updates the urlDatabase with the random shortened URL and the submitted form URL
   res.redirect(`/urls/${id}`); //redirect to the new URL with the id in the path
 });
 
 //new route to render template with access to specific url id
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
-  const longURL = urlDatabase[req.params.id];
+  const longURL = urlDatabase[req.params.id]["longURL"];
   const templateVars = { id, longURL, user: users[req.cookies.user_id], }; //this used to be username, changed it to user
   
   res.render("urls_show", templateVars);
@@ -158,9 +167,10 @@ app.get("/u/:id", (req, res) => {
   //alert the user if their shortform URL doesn't exist
   if (urlDatabase[id] === undefined) {
     res.send("You tried to access a shortened URL that doesn't exist")
+    return
   }
- 
-  const longURL = urlDatabase[id];
+  
+  const longURL = urlDatabase[id]["longURL"];
   res.redirect(longURL);
 });
 
@@ -221,9 +231,9 @@ app.post("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
+// app.get("/urls.json", (req, res) => {
+//   res.json(urlDatabase);
+// });
 
 //listens for a connection to the server and returns to the user that the connection has been established
 app.listen(PORT, () => {
