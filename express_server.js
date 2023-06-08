@@ -27,7 +27,7 @@ const generateRandomString = function() {
 const lookUserUp = function (email, obj) {
   for (item in obj) {
     if (email === obj[item].email) {
-      return obj;
+      return obj[item];
     }
   }
   return null;
@@ -163,24 +163,20 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   
-  console.log(email)
-  console.log(password)
-  console.log(users)
-  console.log(req.cookies.user_id)
-  console.log(users[req.cookies.user_id])
+  const check = lookUserUp(email,users)
 
   //if email cannot be found, return with 403 status code
-  if (!lookUserUp(email, users)) {
+  if (!check) {
     return res.status(403).send("your email address couldn't be found");
   }
   
-  if (lookUserUp(email, users)) {
-    if (password !== users[req.cookies.user_id].password) {
+  if (check) {
+    if (password !== check.password) {
       return res.status(403).send("Your password does not match")
     }
   }
 
-  res.cookie("user_id", req.cookies.user_id)
+  res.cookie("user_id", check.id)
   res.redirect("/urls");
 });
 
