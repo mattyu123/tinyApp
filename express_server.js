@@ -57,7 +57,6 @@ const users = {
 //Request also takes the cookies that were generated
 app.get('/urls', (req, res) => {
   const loggedInUser = users[req.cookies.user_id];
-
   const templateVars = {
     urls: urlDatabase,
     user: loggedInUser
@@ -68,12 +67,18 @@ app.get('/urls', (req, res) => {
 
 //create a route for the registration page when the user wants to login
 app.get('/register', (req, res) => {
+  const loggedInUser = users[req.cookies.user_id];
+  
+  //if user is already logged in, redirects user to the /url page
+  if (loggedInUser) {
+    res.redirect("/urls")
+  }
+
   res.render('registration');
 });
 
 //route that handles the registration form data and adds the new login to users object
 app.post('/register', (req, res) => {
-  const newUserID = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
   
@@ -86,6 +91,9 @@ app.post('/register', (req, res) => {
   if (lookUserUp(email, users)) {
     return res.status(400).send("An email like this already exists");
   }
+
+  //generates a new random ID for the user
+  const newUserID = generateRandomString();
   
   //adds the newly generated userID to the users object
   users[newUserID] = {
@@ -153,6 +161,13 @@ app.post("/urls/edit/:id", (req, res) => {
 
 //route that renders the login page
 app.get("/login", (req, res) => {
+  const loggedInUser = users[req.cookies.user_id];
+  
+  //if user is already logged in, redirects user to the /url page
+  if (loggedInUser) {
+    res.redirect("/urls")
+  }
+  
   res.render("login");
 });
 
