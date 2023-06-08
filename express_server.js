@@ -34,10 +34,21 @@ const lookUserUp = function (email, obj){
 };
 
 //Object that stores our URLs with shortened version as key and full URL as value
+// const urlDatabase = {
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com"
+// };
+
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+    "b2xVn2": {
+      longURL: "http://www.lighthouselabs.ca",
+      userID: "userRandomID"
+    },
+    "9sm5xK": {
+      longURL: "http://www.google.com",
+      userID: "user2RandomID"
+    }
+  };
 
 //users object contains the id, login and password for anyone who enters our app
 const users = {
@@ -163,6 +174,7 @@ app.get("/urls/:id", (req, res) => {
 //takes the short form URL and redirects it to the long form URL
 app.get("/u/:id", (req, res) => {
   const id = req.params.id;
+  console.log(id)
 
   //alert the user if their shortform URL doesn't exist
   if (urlDatabase[id] === undefined) {
@@ -185,7 +197,7 @@ app.post("/urls/delete/:id", (req, res) => {
 //post route that updates a URL reasource and redirects back to the /urls page
 app.post("/urls/edit/:id", (req, res) => {
   const id = req.params.id;
-  urlDatabase[id] = req.body["updatedURL"];
+  urlDatabase[id]["longURL"] = req.body["updatedURL"];
 
   res.redirect("/urls");
 });
