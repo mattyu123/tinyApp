@@ -184,15 +184,11 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
 });
 
-//post route that will
+//post route that will clear the user_id cookie
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
   res.redirect("/urls");
 });
-
-// app.get("/", (req, res) => {
-//   res.send("Hello! You have reached the home page");
-// });
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
