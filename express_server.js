@@ -56,7 +56,6 @@ const users = {
 //add a route to handle the urls that come into our template
 //Request also takes the cookies that were generated
 app.get('/urls', (req, res) => {
-
   const loggedInUser = users[req.cookies.user_id];
 
   const templateVars = {
@@ -97,7 +96,6 @@ app.post('/register', (req, res) => {
   
   //create a cookie with the user's newly generated ID
   res.cookie("user_id", newUserID);
-
   res.redirect("/urls");
 });
 
@@ -117,7 +115,6 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
 
   urlDatabase[id] = longURL; //updates the urlDatabase with the random shortened URL and the submitted form URL
-
   res.redirect(`/urls/${id}`); //redirect to the new URL with the id in the path
 });
 
@@ -125,16 +122,16 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[req.params.id];
-
   const templateVars = { id, longURL, username: users[req.cookies.user_id], };
+  
   res.render("urls_show", templateVars);
 });
 
 //takes the short form URL and redirects it to the long form URL
 app.get("/u/:id", (req, res) => {
   const id = req.params.id;
-
   const longURL = urlDatabase[id];
+  
   res.redirect(longURL);
 });
 
@@ -150,6 +147,7 @@ app.post("/urls/delete/:id", (req, res) => {
 app.post("/urls/edit/:id", (req, res) => {
   const id = req.params.id;
   urlDatabase[id] = req.body["updatedURL"];
+
   res.redirect("/urls");
 });
 
@@ -162,7 +160,6 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  
   const checkLoginCredentials = lookUserUp(email,users);
 
   //if email cannot be found, return with 403 status code
