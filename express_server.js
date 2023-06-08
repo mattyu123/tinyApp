@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.set("view engine", "ejs");
 
-//HELPER FUNCTIONS DEFINED BELOW 
+//HELPER FUNCTIONS DEFINED BELOW
 //function to generate a random unique 6 character string
 const generateRandomString = function() {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -23,15 +23,15 @@ const generateRandomString = function() {
   return result;
 };
 
-//function that will look to find a user in the user object - returns null if the user is not found, will return entire object if it is 
-const lookUserUp = function (email, obj) {
-  for (item in obj) {
+//function that will look to find a user in the user object - returns null if the user is not found, will return entire object if it is
+const lookUserUp = function (email, obj){
+  for (const item in obj) {
     if (email === obj[item].email) {
       return obj[item];
     }
   }
   return null;
-}
+};
 
 //Object that stores our URLs with shortened version as key and full URL as value
 const urlDatabase = {
@@ -57,7 +57,7 @@ const users = {
 //Request also takes the cookies that were generated
 app.get('/urls', (req, res) => {
 
-  const loggedInUser = users[req.cookies.user_id]
+  const loggedInUser = users[req.cookies.user_id];
 
   const templateVars = {
     urls: urlDatabase,
@@ -69,8 +69,8 @@ app.get('/urls', (req, res) => {
 
 //create a route for the registration page when the user wants to login
 app.get('/register', (req, res) => {
-  res.render('registration')
-})
+  res.render('registration');
+});
 
 //route that handles the registration form data and adds the new login to users object
 app.post('/register', (req, res) => {
@@ -80,12 +80,12 @@ app.post('/register', (req, res) => {
   
   //if there is no email or password, then sends 400 error code with error message
   if (!email || !password) {
-    return res.status(400).send("You must enter a username or password")
+    return res.status(400).send("You must enter a username or password");
   }
   
   //if the email already exists, then you cannot continue
-  if(lookUserUp(email, users)) {
-    return res.status(400).send("An email like this already exists")
+  if (lookUserUp(email, users)) {
+    return res.status(400).send("An email like this already exists");
   }
   
   //adds the newly generated userID to the users object
@@ -93,13 +93,13 @@ app.post('/register', (req, res) => {
     id: newUserID,
     email,
     password
-  }
+  };
   
   //create a cookie with the user's newly generated ID
   res.cookie("user_id", newUserID);
 
-  res.redirect("/urls")
-})
+  res.redirect("/urls");
+});
 
 //Create a get route to render the urls_new.ejs
 app.get("/urls/new", (req, res) => {
@@ -155,28 +155,29 @@ app.post("/urls/edit/:id", (req, res) => {
 
 //route that renders the login page
 app.get("/login", (req, res) => {
-  res.render("login")
-})
+  res.render("login");
+});
 
 //post route that handles the login request to create a cookie and store it
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   
-  const check = lookUserUp(email,users)
+  const checkLoginCredentials = lookUserUp(email,users);
 
   //if email cannot be found, return with 403 status code
-  if (!check) {
+  if (!checkLoginCredentials) {
     return res.status(403).send("your email address couldn't be found");
   }
   
-  if (check) {
-    if (password !== check.password) {
-      return res.status(403).send("Your password does not match")
+  //if email is correct but password is not, tell the user
+  if (checkLoginCredentials) {
+    if (password !== checkLoginCredentials.password) {
+      return res.status(403).send("Your password does not match");
     }
   }
 
-  res.cookie("user_id", check.id)
+  res.cookie("user_id", checkLoginCredentials.id);
   res.redirect("/urls");
 });
 
