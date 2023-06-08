@@ -72,6 +72,7 @@ app.get('/register', (req, res) => {
   //if user is already logged in, redirects user to the /url page
   if (loggedInUser) {
     res.redirect("/urls")
+    return
   }
 
   res.render('registration');
@@ -109,8 +110,16 @@ app.post('/register', (req, res) => {
 
 //Create a get route to render the urls_new.ejs
 app.get("/urls/new", (req, res) => {
+  const loggedInUser = users[req.cookies.user_id];
+  
+  // if user is not logged in, they cannot add a new URL and redirects them to login page
+  if (loggedInUser === undefined) {
+    res.redirect("/login")
+    return
+  }
+
   const templateVars = {
-    username: users[req.cookies.user_id]
+    user: users[req.cookies.user_id] //this used to be username, changed it 
   };
 
   res.render("urls_new", templateVars);
@@ -118,7 +127,15 @@ app.get("/urls/new", (req, res) => {
 
 //sends a post request to the server
 app.post("/urls", (req, res) => {
+  const loggedInUser = users[req.cookies.user_id];
   
+  // if user is not logged in, tell the suer why they cannot shorten URLs
+  if (loggedInUser === undefined) {
+    res.send('<p>"You must be logged in to be able to shorten URLs"</p>').redirect("/login")
+    // console.log(users)
+    return
+  }
+
   const id = generateRandomString();
   const longURL = req.body.longURL;
 
@@ -130,7 +147,7 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[req.params.id];
-  const templateVars = { id, longURL, username: users[req.cookies.user_id], };
+  const templateVars = { id, longURL, user: users[req.cookies.user_id], }; //this used to be username, changed it to user
   
   res.render("urls_show", templateVars);
 });
@@ -166,6 +183,7 @@ app.get("/login", (req, res) => {
   //if user is already logged in, redirects user to the /url page
   if (loggedInUser) {
     res.redirect("/urls")
+    return
   }
   
   res.render("login");
