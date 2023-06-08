@@ -129,10 +129,9 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   const loggedInUser = users[req.cookies.user_id];
   
-  // if user is not logged in, tell the suer why they cannot shorten URLs
+  // if user is not logged in, tell the user why they cannot shorten URLs
   if (loggedInUser === undefined) {
-    res.send('<p>"You must be logged in to be able to shorten URLs"</p>').redirect("/login")
-    // console.log(users)
+    res.send("You must be logged in to be able to shorten URLs").redirect("/login")
     return
   }
 
@@ -155,8 +154,13 @@ app.get("/urls/:id", (req, res) => {
 //takes the short form URL and redirects it to the long form URL
 app.get("/u/:id", (req, res) => {
   const id = req.params.id;
+
+  //alert the user if their shortform URL doesn't exist
+  if (urlDatabase[id] === undefined) {
+    res.send("You tried to access a shortened URL that doesn't exist")
+  }
+ 
   const longURL = urlDatabase[id];
-  
   res.redirect(longURL);
 });
 
