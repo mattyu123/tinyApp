@@ -10,6 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.set("view engine", "ejs");
 
+//HELPER FUNCTIONS DEFINED BELOW 
 //function to generate a random unique 6 character string
 const generateRandomString = function() {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -21,6 +22,16 @@ const generateRandomString = function() {
   }
   return result;
 };
+
+//function that will look to find a user in the user object - returns null if the user is not found, will return entire object if it is 
+const lookUserUp = function (email, obj) {
+  for (item in obj) {
+    if (email === obj[item].email) {
+      return obj;
+    }
+  }
+  return null;
+}
 
 //Object that stores our URLs with shortened version as key and full URL as value
 const urlDatabase = {
@@ -48,10 +59,9 @@ app.get('/urls', (req, res) => {
 
   const loggedInUser = users[req.cookies.user_id]
 
-    const templateVars = {
+  const templateVars = {
     urls: urlDatabase,
     user: loggedInUser
-    // username: users[req.cookies.user_id],
   };
 
   res.render('urls_index', templateVars); //testing that the connection can be established
@@ -68,17 +78,14 @@ app.post('/register', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   
-  
   //if there is no email or password, then sends 400 error code with error message
   if (!email || !password) {
     return res.status(400).send("You must enter a username or password")
   }
   
   //if the email already exists, then you cannot continue
-  for (item in users) {
-    if (email === users[item].email) {
-      return res.status(400).send("An email like this already exists")
-    }
+  if(lookUserUp(email, users)) {
+    return res.status(400).send("An email like this already exists")
   }
   
   //adds the newly generated userID to the users object
@@ -153,20 +160,39 @@ app.get("/login", (req, res) => {
 
 //post route that handles the login request to create a cookie and store it
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
+  const email = req.body.email;
+  const password = req.body.password;
+  
+  console.log(email)
+  console.log(password)
+  console.log(users)
+  console.log(req.cookies.user_id)
+  console.log(users[req.cookies.user_id])
+
+  //if email cannot be found, return with 403 status code
+  if (!lookUserUp(email, users)) {
+    return res.status(403).send("your email address couldn't be found");
+  }
+  
+  if (lookUserUp(email, users)) {
+    if (password !== users[req.cookies.user_id].password) {
+      return res.status(403).send("Your password does not match")
+    }
+  }
+
+  res.cookie("user_id", req.cookies.user_id)
   res.redirect("/urls");
 });
 
 //post route that will
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
-  // res.clearCookie("user_id"); -- clears the cookie so after we logout it gets rid of cookie
   res.redirect("/urls");
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello! You have reached the home page");
-});
+// app.get("/", (req, res) => {
+//   res.send("Hello! You have reached the home page");
+// });
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
