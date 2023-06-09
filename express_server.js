@@ -78,6 +78,7 @@ app.get('/urls', (req, res) => {
 
   if (loggedInUser === undefined) {
     res.send("You are not logged in, please login first")
+    return;
   }
 
   const templateVars = {
@@ -142,7 +143,7 @@ app.get("/urls/new", (req, res) => {
   }
 
   const templateVars = {
-    user: users[req.cookies.user_id] //this used to be username, changed it 
+    user: users[req.cookies.user_id] 
   };
 
   res.render("urls_new", templateVars);
@@ -180,8 +181,11 @@ app.get("/urls/:id", (req, res) => {
     res.send("You are not logged in");
     return;
   }
+
+  console.log(urlDatabase)
   //Check for the shorturl belongs to the logged in user
-  if(urlDatabase[id].userID !== loggedInUser){
+
+  if (urlDatabase[id].userID !== loggedInUser.id){
     res.send("The shortURL Does not belong to you! Please try again");
     return;
   }
@@ -223,7 +227,7 @@ app.post("/urls/:id", (res, req) => {
   }
 
   //Check for the shorturl belongs to the logged in user
-  if(urlDatabase[id].userID !== loggedInUser){
+  if(urlDatabase[id].userID !== loggedInUser.id){
     res.send("The shortURL Does not belong to you! Please try again");
     return;
   }
@@ -232,7 +236,7 @@ app.post("/urls/:id", (res, req) => {
 })
 
 //post route that removes a url resources and redirects user back to url home page
-app.post("/urls/:id/delete", (req, res) => {
+app.post("/urls/delete/:id", (req, res) => {
   const id = req.params.id;
   const loggedInUser = users[req.cookies.user_id];
 
@@ -246,16 +250,15 @@ app.post("/urls/:id/delete", (req, res) => {
     return;
   }
 
-  if(urlDatabase[id].userID !== loggedInUser){
+  if(urlDatabase[id].userID !== loggedInUser.id){
     res.send("The shortURL Does not belong to you! Please try again");
+    console.log(urlDatabase)
     return;
   }
 
   delete urlDatabase[id];
   res.redirect("/urls");
 });
-
-
 
 
 //post route that updates a URL resource and redirects back to the /urls page
