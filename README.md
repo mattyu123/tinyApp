@@ -1,4 +1,21 @@
 # **TinyApp**
 
-### **Purpose**
-This project allows users to submit a URL and the app will return a shorted form of the URL 
+TinyApp is a full stack web application built with Node and Express that allows users to shorten long URLs (à la bit.ly).
+
+## Final Product
+
+!["Home Screen of TinyApp"](images/tinyApp.png)
+
+
+## Dependencies
+
+- Node.js
+- Express
+- EJS
+- bcryptjs
+- cookie-session
+
+## Getting Started
+
+- Install all dependencies (using the `npm install` command).
+- Run the development web server using the `node express_server.js` command.
