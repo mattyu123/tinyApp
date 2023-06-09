@@ -34,19 +34,6 @@ const lookUserUp = function (email, obj){
 };
 
 //function that returns the an array of the URLs where userID is equal to the current logged in user
-//THIS OLD CODE ONLY SHOWS 1 LINE 
-// const urlsForUser = function (cookie, database) {
-//   let final = {};
-  
-//   for (const item in database) {
-//     if (database[item].userID === cookie) {
-//       final = {
-//         [item]: database[item].longURL
-//       }
-//     }
-//   }
-//   return final;
-// }
 const urlsForUser = function (cookie, database) {
   let final = {};
 
@@ -94,21 +81,12 @@ app.get('/urls', (req, res) => {
   const id = req.params.id;
   const loggedInUser = users[req.cookies.user_id];
 
-  // console.log("check", )
-  // console.log(users)
-  // console.log(loggedInUser)
-  // console.log(urlDatabase)
-  // console.log("user_cookie", req.cookies.user_id)
-
   if (loggedInUser === undefined) {
     res.send("You are not logged in, please login first")
     return;
   }
 
   const finalURLs = urlsForUser(req.cookies.user_id, urlDatabase)
-
-  //this is not sending all the final URLs over
-  console.log(finalURLs)
 
   // pass in only the urls that belong to the user
    const templateVars = {
@@ -210,13 +188,17 @@ app.get("/urls/:id", (req, res) => {
 
   //check to see if the user is logged in or not
   if (loggedInUser === undefined) {
-    res.send("You are not logged in");
+    res.send("You are not logged in. Log in first and try again");
     return;
   }
 
-  console.log(urlDatabase)
-  //Check for the shorturl belongs to the logged in user
+  //check to see if the page exists
+  if (urlDatabase[id] === undefined) {
+    res.send("This page does not exist. Try a different short URL")
+    return
+  }
 
+  //check to see if the shortURL belongs to the logged in user
   if (urlDatabase[id].userID !== loggedInUser.id){
     res.send("The shortURL Does not belong to you! Please try again");
     return;
