@@ -54,7 +54,7 @@ const urlDatabase = {
     },
     "9sm5xK": {
       longURL: "http://www.google.com",
-      userID: "user2RandomID"
+      userID: "userRandomID2"
     }
   };
 
@@ -66,7 +66,7 @@ const users = {
     password: "1234",
   },
   userRandomID2: {
-    id: "user2RandomID",
+    id: "userRandomID2",
     email: "b@b.com",
     password: "abcd",
   },
@@ -78,6 +78,9 @@ app.get('/urls', (req, res) => {
   const id = req.params.id;
   const loggedInUser = users[req.cookies.user_id];
 
+  console.log("check", )
+  console.log(loggedInUser)
+
   if (loggedInUser === undefined) {
     res.send("You are not logged in, please login first")
     return;
@@ -86,11 +89,6 @@ app.get('/urls', (req, res) => {
   const finalURLs = urlsForUser(req.cookies.user_id, urlDatabase)
 
   console.log(finalURLs)
-
-  // const templateVars = {
-  //   urls: urlDatabase,
-  //   user: loggedInUser
-  // };
 
   // pass in only the urls that belong to the user
    const templateVars = {
