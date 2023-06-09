@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require('cookie-parser');
+const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -62,18 +63,20 @@ const urlDatabase = {
   };
 
 //users object contains the id, login and password for anyone who enters our app
-const users = {
-  userRandomID: {
-    id: "userRandomID",
-    email: "a@a.com",
-    password: "1234",
-  },
-  userRandomID2: {
-    id: "userRandomID2",
-    email: "b@b.com",
-    password: "abcd",
-  },
-};
+// const users = {
+//   userRandomID: {
+//     id: "userRandomID",
+//     email: "a@a.com",
+//     password: "1234",
+//   },
+//   userRandomID2: {
+//     id: "userRandomID2",
+//     email: "b@b.com",
+//     password: "abcd",
+//   },
+// };
+
+const users = {}
 
 //add a route to handle the urls that come into our template
 //Request also takes the cookies that were generated
@@ -117,14 +120,20 @@ app.post('/register', (req, res) => {
   
   //if there is no email or password, then sends 400 error code with error message
   if (!email || !password) {
-    return res.status(400).send("You must enter a username or password");
+    res.status(400).send("You must enter a username or password");
+    return;
   }
   
   //if the email already exists, then you cannot continue
   if (lookUserUp(email, users)) {
-    return res.status(400).send("An email like this already exists");
+    res.status(400).send("An email like this already exists");
+    return;
   }
 
+  //hash the users password
+  const salt = bcrypt.genSaltSync(10)
+  const hashedPassword = bcrypt.hashSync(password, salt)
+  
   //generates a new random ID for the user
   const newUserID = generateRandomString();
   
@@ -132,7 +141,7 @@ app.post('/register', (req, res) => {
   users[newUserID] = {
     id: newUserID,
     email,
-    password
+    password: hashedPassword
   };
   
   //create a cookie with the user's newly generated ID
@@ -274,7 +283,6 @@ app.post("/urls/delete/:id", (req, res) => {
   res.redirect("/urls");
 });
 
-
 //post route that updates a URL resource and redirects back to the /urls page
 app.post("/urls/edit/:id", (req, res) => {
   const id = req.params.id;
@@ -306,12 +314,10 @@ app.post("/login", (req, res) => {
   if (!checkLoginCredentials) {
     return res.status(403).send("your email address couldn't be found");
   }
-  
-  //if email is correct but password is not, tell the user
-  if (checkLoginCredentials) {
-    if (password !== checkLoginCredentials.password) {
-      return res.status(403).send("Your password does not match");
-    }
+
+  //check if email and password is correct with bcrypt
+  if (!bcrypt.compareSync(password, checkLoginCredentials.password)) {
+    return res.status(403).send("Your password does not match");
   }
 
   res.cookie("user_id", checkLoginCredentials.id);
