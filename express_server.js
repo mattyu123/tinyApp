@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const cookieSession = require('cookie-session')
+const {lookUserUp, urlsForUser, generateRandomString} = require("./helpers.js")
 // const cookieParser = require('cookie-parser');
 const bcrypt = require("bcryptjs");
 const app = express();
@@ -19,39 +20,39 @@ app.set("view engine", "ejs");
 
 //HELPER FUNCTIONS DEFINED BELOW
 //function to generate a random unique 6 character string
-const generateRandomString = function() {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  const charactersLength = characters.length;
+// const generateRandomString = function() {
+//   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+//   let result = '';
+//   const charactersLength = characters.length;
 
-  for (let i = 0; i < 6; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-};
+//   for (let i = 0; i < 6; i++) {
+//     result += characters.charAt(Math.floor(Math.random() * charactersLength));
+//   }
+//   return result;
+// };
 
-//function that will look to find a user in the user object - returns null if the user is not found, will return entire object if it is
-const lookUserUp = function (email, obj){
-  for (const item in obj) {
-    if (email === obj[item].email) {
-      return obj[item];
-    }
-  }
-  return null;
-};
+// //function that will look to find a user in the user object - returns null if the user is not found, will return entire object if it is
+// const lookUserUp = function (email, obj){
+//   for (const item in obj) {
+//     if (email === obj[item].email) {
+//       return obj[item];
+//     }
+//   }
+//   return null;
+// };
 
 //function that returns the an array of the URLs where userID is equal to the current logged in user
-const urlsForUser = function (cookie, database) {
-  let final = {};
+// const urlsForUser = function (cookie, database) {
+//   let final = {};
 
-  for (const item in database) {
-    if (database[item].userID === cookie) {
-      console.log(database[item])
-      final[item] = database[item].longURL
-    }
-  }
-  return final;
-}
+//   for (const item in database) {
+//     if (database[item].userID === cookie) {
+//       console.log(database[item])
+//       final[item] = database[item].longURL
+//     }
+//   }
+//   return final;
+// }
 
 const urlDatabase = {
     "b2xVn2": {
