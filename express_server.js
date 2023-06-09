@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
-const cookieSession = require('cookie-session')
-const {lookUserUp, urlsForUser, generateRandomString} = require("./helpers.js")
+const cookieSession = require('cookie-session');
+const {lookUserUp, urlsForUser, generateRandomString} = require("./helpers.js");
 const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -13,28 +13,28 @@ app.use(cookieSession({
   name: 'session',
   keys: ['pizza','potato','chips','phone'],
   maxAge: 24 * 60 * 60 * 1000
-}))
+}));
 app.set("view engine", "ejs");
 
 
 //urlDatabase containing all our URLs and their short companions
 const urlDatabase = {
-    "b2xVn2": {
-      longURL: "http://www.lighthouselabs.ca",
-      userID: "userRandomID"
-    },
-    "9sm5xK": {
-      longURL: "http://www.google.com",
-      userID: "userRandomID2"
-    },
-    "8j37t1": {
-      longURL: "http://facebook.com",
-      userID: "userRandomID2"
-    },
-  };
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "userRandomID"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "userRandomID2"
+  },
+  "8j37t1": {
+    longURL: "http://facebook.com",
+    userID: "userRandomID2"
+  },
+};
 
 //set up empty object to store user Login information
-const users = {}
+const users = {};
 
 //add a route to handle the urls that come into our template
 //Request also takes the cookies that were generated
@@ -42,19 +42,19 @@ app.get('/urls', (req, res) => {
   const loggedInUser = users[req.session.user_id];
 
   if (loggedInUser === undefined) {
-    res.render("loginErrorScreen")
+    res.render("loginErrorScreen");
     return;
   }
 
-  const finalURLs = urlsForUser(req.session.user_id, urlDatabase)
+  const finalURLs = urlsForUser(req.session.user_id, urlDatabase);
 
   // pass in only the urls that belong to the user
-   const templateVars = {
+  const templateVars = {
     urls: finalURLs,
     user: loggedInUser
   };
 
-  res.render('urls_index', templateVars); 
+  res.render('urls_index', templateVars);
 });
 
 //create a get route for the registration page when the user wants to login
@@ -63,8 +63,8 @@ app.get('/register', (req, res) => {
   
   //if user is already logged in, redirects user to the /url page
   if (loggedInUser) {
-    res.redirect("/urls")
-    return
+    res.redirect("/urls");
+    return;
   }
 
   res.render('registration');
@@ -88,8 +88,8 @@ app.post('/register', (req, res) => {
   }
 
   //hash the users password
-  const salt = bcrypt.genSaltSync(10)
-  const hashedPassword = bcrypt.hashSync(password, salt)
+  const salt = bcrypt.genSaltSync(10);
+  const hashedPassword = bcrypt.hashSync(password, salt);
   
   //generates a new random ID for the user
   const newUserID = generateRandomString();
@@ -112,12 +112,12 @@ app.get("/urls/new", (req, res) => {
   
   // if user is not logged in, they cannot add a new URL and redirects them to login page
   if (loggedInUser === undefined) {
-    res.redirect("/login")
-    return
+    res.redirect("/login");
+    return;
   }
 
   const templateVars = {
-    user: users[req.session.user_id] 
+    user: users[req.session.user_id]
   };
 
   res.render("urls_new", templateVars);
@@ -129,8 +129,8 @@ app.post("/urls", (req, res) => {
   
   // if user is not logged in, tell the user why they cannot shorten URLs
   if (loggedInUser === undefined) {
-    res.send("You must be logged in to be able to shorten URLs").redirect("/login")
-    return
+    res.send("You must be logged in to be able to shorten URLs").redirect("/login");
+    return;
   }
 
   const id = generateRandomString();
@@ -140,7 +140,7 @@ app.post("/urls", (req, res) => {
   urlDatabase[id] = {
     longURL,
     userID: req.session.user_id
-  }
+  };
 
   res.redirect(`/urls/${id}`); //redirect to the new URL with the id in the path
 });
@@ -169,7 +169,7 @@ app.get("/urls/:id", (req, res) => {
   }
 
   const longURL = urlDatabase[req.params.id]["longURL"];
-  const templateVars = { id, longURL, user: users[req.session.user_id], }; 
+  const templateVars = { id, longURL, user: users[req.session.user_id] };
   
   res.render("urls_show", templateVars);
 });
@@ -177,12 +177,12 @@ app.get("/urls/:id", (req, res) => {
 //takes the short form URL and redirects it to the long form URL
 app.get("/u/:id", (req, res) => {
   const id = req.params.id;
-  console.log(id)
+  console.log(id);
 
   //alert the user if their shortform URL doesn't exist
   if (urlDatabase[id] === undefined) {
-    res.send("You tried to access a shortened URL that doesn't exist")
-    return
+    res.send("You tried to access a shortened URL that doesn't exist");
+    return;
   }
   
   const longURL = urlDatabase[id]["longURL"];
@@ -205,13 +205,13 @@ app.post("/urls/:id", (res, req) => {
   }
 
   //Check for the shorturl belongs to the logged in user
-  if(urlDatabase[id].userID !== loggedInUser.id){
+  if (urlDatabase[id].userID !== loggedInUser.id) {
     res.send("The shortURL Does not belong to you! Please try again");
     return;
   }
 
-  res.redirect("/urls")
-})
+  res.redirect("/urls");
+});
 
 //post route that removes a url resources and redirects user back to url home page
 app.post("/urls/delete/:id", (req, res) => {
@@ -228,9 +228,9 @@ app.post("/urls/delete/:id", (req, res) => {
     return;
   }
 
-  if(urlDatabase[id].userID !== loggedInUser.id){
+  if (urlDatabase[id].userID !== loggedInUser.id) {
     res.send("The shortURL Does not belong to you! Please try again");
-    console.log(urlDatabase)
+    console.log(urlDatabase);
     return;
   }
 
@@ -252,8 +252,8 @@ app.get("/login", (req, res) => {
   
   //if user is already logged in, redirects user to the /url page
   if (loggedInUser) {
-    res.redirect("/urls")
-    return
+    res.redirect("/urls");
+    return;
   }
   
   res.render("login");
