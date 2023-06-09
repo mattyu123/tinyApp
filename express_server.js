@@ -33,11 +33,17 @@ const lookUserUp = function (email, obj){
   return null;
 };
 
-//Object that stores our URLs with shortened version as key and full URL as value
-// const urlDatabase = {
-//   "b2xVn2": "http://www.lighthouselabs.ca",
-//   "9sm5xK": "http://www.google.com"
-// };
+//function that returns the an array of the URLs where userID is equal to the current logged in user
+const urlsForUser = function (cookie, database) {
+  const final = [];
+  
+  for (const item in database) {
+    if (database[item].userID === cookie) {
+      final.push(database[item].longURL)
+    }
+  }
+  return final;
+}
 
 const urlDatabase = {
     "b2xVn2": {
@@ -69,6 +75,11 @@ const users = {
 app.get('/urls', (req, res) => {
   const id = req.params.id;
   const loggedInUser = users[req.cookies.user_id];
+
+  if (loggedInUser === undefined) {
+    res.send("You are not logged in, please login first")
+  }
+
   const templateVars = {
     urls: urlDatabase,
     user: loggedInUser
@@ -152,19 +163,28 @@ app.post("/urls", (req, res) => {
 
   //updated urlDatabase that will add the longURL, and the userID of the person adding the URL
   urlDatabase[id] = {
-    longURL: longURL,
+    longURL,
     userID: req.cookies.user_id
   }
 
-  // console.log(urlDatabase)
-
-  // urlDatabase[id] = longURL; //updates the urlDatabase with the random shortened URL and the submitted form URL
   res.redirect(`/urls/${id}`); //redirect to the new URL with the id in the path
 });
 
 //new route to render template with access to specific url id
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
+  const loggedInUser = users[req.cookies.user_id];
+
+  if (loggedInUser === undefined) {
+    res.send("You are not logged in");
+    return;
+  }
+  //Check for the shorturl belongs to the logged in user
+  if(urlDatabase[id].userID !== loggedInUser){
+    res.send("The shortURL Does not belong to you! Please try again");
+    return;
+  }
+
   const longURL = urlDatabase[req.params.id]["longURL"];
   const templateVars = { id, longURL, user: users[req.cookies.user_id], }; //this used to be username, changed it to user
   
@@ -242,10 +262,6 @@ app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
   res.redirect("/login");
 });
-
-// app.get("/urls.json", (req, res) => {
-//   res.json(urlDatabase);
-// });
 
 //listens for a connection to the server and returns to the user that the connection has been established
 app.listen(PORT, () => {
