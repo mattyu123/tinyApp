@@ -35,7 +35,7 @@
             <% for (let id in urls) { %>
               <tr>
                 <td><%= id %></td>
-                <td><%= urls[id]["longURL"] %></td>
+                <td><%= urls[id] %></td> 
                 <td>
                   <input type = "button" onclick = "location.href = '/urls/<%= id %>' " value = "Edit">
                 </td>

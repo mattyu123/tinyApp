@@ -35,11 +35,13 @@ const lookUserUp = function (email, obj){
 
 //function that returns the an array of the URLs where userID is equal to the current logged in user
 const urlsForUser = function (cookie, database) {
-  const final = [];
+  let final = {};
   
   for (const item in database) {
     if (database[item].userID === cookie) {
-      final.push(database[item].longURL)
+      final = {
+        [item]: database[item].longURL
+      }
     }
   }
   return final;
@@ -81,8 +83,18 @@ app.get('/urls', (req, res) => {
     return;
   }
 
-  const templateVars = {
-    urls: urlDatabase,
+  const finalURLs = urlsForUser(req.cookies.user_id, urlDatabase)
+
+  console.log(finalURLs)
+
+  // const templateVars = {
+  //   urls: urlDatabase,
+  //   user: loggedInUser
+  // };
+
+  // pass in only the urls that belong to the user
+   const templateVars = {
+    urls: finalURLs,
     user: loggedInUser
   };
 
@@ -175,6 +187,8 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const loggedInUser = users[req.cookies.user_id];
+
+  console.log(loggedInUser)
 
   //check to see if the user is logged in or not
   if (loggedInUser === undefined) {
