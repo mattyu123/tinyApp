@@ -175,6 +175,7 @@ app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const loggedInUser = users[req.cookies.user_id];
 
+  //check to see if the user is logged in or not
   if (loggedInUser === undefined) {
     res.send("You are not logged in");
     return;
@@ -206,15 +207,58 @@ app.get("/u/:id", (req, res) => {
   res.redirect(longURL);
 });
 
-//post route that removes a url resources and redirects user back to url home page
-app.post("/urls/delete/:id", (req, res) => {
+app.post("/urls/:id", (res, req) => {
+  const loggedInUser = users[req.cookies.user_id];
   const id = req.params.id;
-  delete urlDatabase[id];
 
+  //check to see if the user is logged in or not
+  if (loggedInUser === undefined) {
+    res.send("You are not logged in");
+    return;
+  }
+
+  if (id === undefined) {
+    res.send("The ID does not exist");
+    return;
+  }
+
+  //Check for the shorturl belongs to the logged in user
+  if(urlDatabase[id].userID !== loggedInUser){
+    res.send("The shortURL Does not belong to you! Please try again");
+    return;
+  }
+
+  res.redirect("/urls")
+})
+
+//post route that removes a url resources and redirects user back to url home page
+app.post("/urls/:id/delete", (req, res) => {
+  const id = req.params.id;
+  const loggedInUser = users[req.cookies.user_id];
+
+  if (id === undefined) {
+    res.send("This page does not exist");
+    return;
+  }
+
+  if (loggedInUser === undefined) {
+    res.send("You are not logged in");
+    return;
+  }
+
+  if(urlDatabase[id].userID !== loggedInUser){
+    res.send("The shortURL Does not belong to you! Please try again");
+    return;
+  }
+
+  delete urlDatabase[id];
   res.redirect("/urls");
 });
 
-//post route that updates a URL reasource and redirects back to the /urls page
+
+
+
+//post route that updates a URL resource and redirects back to the /urls page
 app.post("/urls/edit/:id", (req, res) => {
   const id = req.params.id;
   urlDatabase[id]["longURL"] = req.body["updatedURL"];
