@@ -2,7 +2,6 @@ const express = require("express");
 const morgan = require("morgan");
 const cookieSession = require('cookie-session')
 const {lookUserUp, urlsForUser, generateRandomString} = require("./helpers.js")
-// const cookieParser = require('cookie-parser');
 const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -10,7 +9,6 @@ const PORT = 8080; // default port 8080
 //setting up all the middleware that we need
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
-// app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
   keys: ['pizza','potato','chips','phone'],
@@ -18,42 +16,8 @@ app.use(cookieSession({
 }))
 app.set("view engine", "ejs");
 
-//HELPER FUNCTIONS DEFINED BELOW
-//function to generate a random unique 6 character string
-// const generateRandomString = function() {
-//   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-//   let result = '';
-//   const charactersLength = characters.length;
 
-//   for (let i = 0; i < 6; i++) {
-//     result += characters.charAt(Math.floor(Math.random() * charactersLength));
-//   }
-//   return result;
-// };
-
-// //function that will look to find a user in the user object - returns null if the user is not found, will return entire object if it is
-// const lookUserUp = function (email, obj){
-//   for (const item in obj) {
-//     if (email === obj[item].email) {
-//       return obj[item];
-//     }
-//   }
-//   return null;
-// };
-
-//function that returns the an array of the URLs where userID is equal to the current logged in user
-// const urlsForUser = function (cookie, database) {
-//   let final = {};
-
-//   for (const item in database) {
-//     if (database[item].userID === cookie) {
-//       console.log(database[item])
-//       final[item] = database[item].longURL
-//     }
-//   }
-//   return final;
-// }
-
+//urlDatabase containing all our URLs and their short companions
 const urlDatabase = {
     "b2xVn2": {
       longURL: "http://www.lighthouselabs.ca",
@@ -69,26 +33,12 @@ const urlDatabase = {
     },
   };
 
-//users object contains the id, login and password for anyone who enters our app
-// const users = {
-//   userRandomID: {
-//     id: "userRandomID",
-//     email: "a@a.com",
-//     password: "1234",
-//   },
-//   userRandomID2: {
-//     id: "userRandomID2",
-//     email: "b@b.com",
-//     password: "abcd",
-//   },
-// };
-
+//set up empty object to store user Login information
 const users = {}
 
 //add a route to handle the urls that come into our template
 //Request also takes the cookies that were generated
 app.get('/urls', (req, res) => {
-  const id = req.params.id;
   const loggedInUser = users[req.session.user_id];
 
   if (loggedInUser === undefined) {
@@ -104,10 +54,10 @@ app.get('/urls', (req, res) => {
     user: loggedInUser
   };
 
-  res.render('urls_index', templateVars); //testing that the connection can be established
+  res.render('urls_index', templateVars); 
 });
 
-//create a route for the registration page when the user wants to login
+//create a get route for the registration page when the user wants to login
 app.get('/register', (req, res) => {
   const loggedInUser = users[req.session.user_id];
   
@@ -152,7 +102,6 @@ app.post('/register', (req, res) => {
   };
   
   //create a cookie with the user's newly generated ID
-  // res.cookie("user_id", newUserID);
   req.session.user_id = newUserID;
   res.redirect("/urls");
 });
@@ -201,8 +150,6 @@ app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const loggedInUser = users[req.session.user_id];
 
-  console.log(loggedInUser)
-
   //check to see if the user is logged in or not
   if (loggedInUser === undefined) {
     res.send("You are not logged in. Log in first and try again");
@@ -211,18 +158,18 @@ app.get("/urls/:id", (req, res) => {
 
   //check to see if the page exists
   if (urlDatabase[id] === undefined) {
-    res.send("This page does not exist. Try a different short URL")
-    return
+    res.send("This page does not exist. Try a different short URL");
+    return;
   }
 
   //check to see if the shortURL belongs to the logged in user
-  if (urlDatabase[id].userID !== loggedInUser.id){
+  if (urlDatabase[id].userID !== loggedInUser.id) {
     res.send("The shortURL Does not belong to you! Please try again");
     return;
   }
 
   const longURL = urlDatabase[req.params.id]["longURL"];
-  const templateVars = { id, longURL, user: users[req.session.user_id], }; //this used to be username, changed it to user
+  const templateVars = { id, longURL, user: users[req.session.user_id], }; 
   
   res.render("urls_show", templateVars);
 });
@@ -328,14 +275,12 @@ app.post("/login", (req, res) => {
     return res.status(403).send("Your password does not match");
   }
 
-  // res.cookie("user_id", checkLoginCredentials.id);
   req.session.user_id = checkLoginCredentials.id;
   res.redirect("/urls");
 });
 
 //post route that will clear the user_id cookie
 app.post("/logout", (req, res) => {
-  // res.clearCookie("user_id");
   req.session = null;
   res.redirect("/login");
 });

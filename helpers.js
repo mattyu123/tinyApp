@@ -8,7 +8,7 @@ const lookUserUp = function (email, obj){
   return null;
 };
 
-//function that returns the an array of the URLs where userID is equal to the current logged in user
+//function that returns the an object of the URLs where userID is equal to the current logged in user
 const urlsForUser = function (cookie, database) {
   let final = {};
 
