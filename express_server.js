@@ -34,14 +34,26 @@ const lookUserUp = function (email, obj){
 };
 
 //function that returns the an array of the URLs where userID is equal to the current logged in user
+//THIS OLD CODE ONLY SHOWS 1 LINE 
+// const urlsForUser = function (cookie, database) {
+//   let final = {};
+  
+//   for (const item in database) {
+//     if (database[item].userID === cookie) {
+//       final = {
+//         [item]: database[item].longURL
+//       }
+//     }
+//   }
+//   return final;
+// }
 const urlsForUser = function (cookie, database) {
   let final = {};
-  
+
   for (const item in database) {
     if (database[item].userID === cookie) {
-      final = {
-        [item]: database[item].longURL
-      }
+      console.log(database[item])
+      final[item] = database[item].longURL
     }
   }
   return final;
@@ -55,7 +67,11 @@ const urlDatabase = {
     "9sm5xK": {
       longURL: "http://www.google.com",
       userID: "userRandomID2"
-    }
+    },
+    "8j37t1": {
+      longURL: "http://facebook.com",
+      userID: "userRandomID2"
+    },
   };
 
 //users object contains the id, login and password for anyone who enters our app
@@ -78,8 +94,11 @@ app.get('/urls', (req, res) => {
   const id = req.params.id;
   const loggedInUser = users[req.cookies.user_id];
 
-  console.log("check", )
-  console.log(loggedInUser)
+  // console.log("check", )
+  // console.log(users)
+  // console.log(loggedInUser)
+  // console.log(urlDatabase)
+  // console.log("user_cookie", req.cookies.user_id)
 
   if (loggedInUser === undefined) {
     res.send("You are not logged in, please login first")
@@ -88,6 +107,7 @@ app.get('/urls', (req, res) => {
 
   const finalURLs = urlsForUser(req.cookies.user_id, urlDatabase)
 
+  //this is not sending all the final URLs over
   console.log(finalURLs)
 
   // pass in only the urls that belong to the user
