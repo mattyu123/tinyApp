@@ -7,16 +7,11 @@
   <title>Document</title>
 </head>
 <body>
-  <h1>Login</h1>
-  <p>Please log in by entering your email and password into the fields below</p>
-  <form method="POST" action="/login">
-    Email:<input type = "email" name = "email"></input>
-    <br>
-    Password:<input type = "password" name = "password"></input>
-    <br>
-    <button type = "submit">Login</button>
+  <p>You are not logged in, please login first</p>
+  <form method="GET" action="/login">
+    <button type="submit" class = "btn btn-primary">Login</button>
   </form>
-  <br>
+
   <p>Don't have an account? Register for one by clicking below</p>
   <form method="GET" action="/register">
     <button type="submit" class = "btn btn-primary">Register</button>

@@ -82,7 +82,7 @@ app.get('/urls', (req, res) => {
   const loggedInUser = users[req.cookies.user_id];
 
   if (loggedInUser === undefined) {
-    res.send("You are not logged in, please login first")
+    res.render("loginErrorScreen")
     return;
   }
 
