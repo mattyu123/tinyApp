@@ -6,9 +6,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 !["Home Screen of TinyApp"](images/tinyApp.png)
 
-
 ## Dependencies
-
 - Node.js
 - Express
 - EJS

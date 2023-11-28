@@ -4,7 +4,7 @@ const cookieSession = require('cookie-session');
 const {lookUserUp, urlsForUser, generateRandomString} = require("./helpers.js");
 const bcrypt = require("bcryptjs");
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 3000; // default port 8080
 
 //setting up all the middleware that we need
 app.use(morgan('dev'));
@@ -15,7 +15,6 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000
 }));
 app.set("view engine", "ejs");
-
 
 //urlDatabase containing all our URLs and their short companions
 const urlDatabase = {
@@ -35,6 +34,12 @@ const urlDatabase = {
 
 //set up empty object to store user Login information
 const users = {};
+
+//When users get to the main localhost page, redirect them immediately to the login page
+app.get('/', (req, res) => {
+  res.redirect('/login')
+})
+
 
 //add a route to handle the urls that come into our template
 //Request also takes the cookies that were generated
